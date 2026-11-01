@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organizador de Arquivos HTML</title>
+<meta name="theme-color" content="#0b1020"><meta name="description" content="Organize arquivos HTML por título, elimine duplicatas e gere relatórios. Funciona offline."><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon-192.png"><link rel="apple-touch-icon" href="./icons/icon-192.png">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color-scheme:dark;--bg:#0b1020;--card:#161e32;--line:#34415b;--muted:#b6c4d9;--accent:#6aa8ff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0c1428,#111a30);color:#edf4ff}.wrap{max-width:1100px;margin:auto;padding:32px 18px 70px}h1{font-size:clamp(25px,4vw,38px);margin:0 0 12px}p{color:var(--muted);line-height:1.5}.tag{color:#9bc7ff;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}.card{background:var(--card);padding:22px;margin-top:18px;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px #0003}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:700px){.grid{grid-template-columns:1fr}}button{border:1px solid #4674b6;background:#234c8d;color:white;padding:12px 17px;border-radius:10px;font-weight:700;cursor:pointer}button:hover:not(:disabled){filter:brightness(1.2)}button:disabled{opacity:.42;cursor:not-allowed}.sub{background:#23314d;border-color:#465b80}.danger{background:#683b47;border-color:#a76673}.label{font-weight:650;margin-bottom:7px}.small{font-size:13px;color:var(--muted)}.path{word-break:break-word;font-size:13px;color:#bbd7ff;padding-top:10px}.actions{display:flex;gap:12px;flex-wrap:wrap}.metrics{display:flex;gap:12px;flex-wrap:wrap}.metric{background:#10182b;padding:11px 15px;border:1px solid var(--line);border-radius:9px}.metric strong{font-size:23px;display:block}.tablewrap{max-height:430px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:14px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;vertical-align:top;border-bottom:1px solid #2c3c58;padding:10px;overflow-wrap:anywhere}th{position:sticky;top:0;background:#23304b}.ok{color:#92e8ae}.skip{color:#ffd18a}.rename{color:#8fbeff}.error{color:#ff9d9d}#log{white-space:pre-wrap;max-height:200px;overflow:auto;background:#0a1222;padding:14px;border-radius:10px;font-size:12px;color:#c2d5ef}input[type=checkbox]{accent-color:#66a1ff}label.check{display:flex;align-items:start;gap:10px;margin:9px 0;color:#c3d0e5}.progressPanel{margin-top:18px;padding:16px;border:1px solid #46638d;background:#0e1b33;border-radius:12px}.progressPanel[hidden]{display:none}.progressTrack{height:16px;border-radius:99px;background:#263957;overflow:hidden;margin:12px 0 9px}.progressFill{height:100%;width:0%;background:linear-gradient(90deg,#438fff,#7ed7ff);transition:width .12s}.progressTitle{font-weight:700}.progressMeta{font-size:13px;color:#bcd4f6;overflow-wrap:anywhere}.note{border-left:3px solid #76aaff;padding:8px 12px;background:#172845;border-radius:6px}
+
+/* V3 — prévia adaptada para telas pequenas */
+@media (max-width: 700px) {
+ html,body{max-width:100%;overflow-x:hidden}
+ .wrap{padding:20px 12px 55px}
+ .card{padding:17px 14px;border-radius:16px}
+ .note{font-size:14px;line-height:1.5}
+ .actions{display:grid;grid-template-columns:1fr}
+ .actions button,.grid button{width:100%;min-height:48px}
+ .metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .metric{min-width:0;padding:12px 10px;font-size:12px;line-height:1.35}
+ .metric strong{font-size:25px;margin-bottom:3px}
+ .tablewrap{overflow:visible;max-height:none;border:0;background:transparent}
+ table,tbody{display:block;width:100%}
+ thead{display:none}
+ tbody{display:grid;gap:12px}
+ tbody tr{display:block;background:#101a30;border:1px solid #354663;border-radius:13px;padding:12px;min-width:0;box-shadow:0 4px 12px #0002}
+ tbody tr td{display:block;min-width:0;width:100%;padding:9px 0;border:0;border-bottom:1px solid #293a57;font-size:14px;line-height:1.45;overflow-wrap:anywhere;word-break:normal;white-space:normal}
+ tbody tr td:last-child{border-bottom:0;padding-bottom:2px;font-weight:750}
+ tbody tr td::before{content:attr(data-label);display:block;font-size:11px;line-height:1.3;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:#9cb7de;margin-bottom:5px}
+ tbody tr td[data-label="Título encontrado"]{font-weight:700;font-size:15px;color:#f3f7ff}
+ tbody tr td[data-label="Nome final"]{color:#a8d1ff;font-weight:650}
+ tbody tr td[data-label="Origem"]{color:#c7d4ea;font-size:12px}
+ tbody tr td[data-label="Data utilizada"]{color:#bdcbe1;font-size:13px}
+ tbody tr td[data-label="Ação"]{display:inline-block;width:auto;max-width:100%;padding:7px 10px;margin-top:10px;border-radius:8px;background:#203a32}
+ tbody tr td.skip[data-label="Ação"]{background:#3b3021}
+ tbody tr td.rename[data-label="Ação"]{background:#203754}
+ tbody tr td[colspan]{font-size:13px}
+ tbody tr td[colspan]::before{display:none}
+ .progressMeta{font-size:12px}
+ #log{font-size:12px;overflow-wrap:anywhere}
+}
+@media(max-width:360px){.metrics{grid-template-columns:1fr 1fr}.metric{font-size:11px;padding:10px 8px}}
+</style>
+</head>
+<body><main class="wrap"><div class="tag">PWA · funciona offline · HTML</div><h1>Organizador de arquivos HTML</h1><p>Leia a pasta de origem e a pasta de destino. O programa extrai a tag <code>&lt;title&gt;</code>, identifica cópias idênticas e organiza os nomes por data, respeitando versões já existentes.</p>
+<div class="note"><strong>Compatibilidade:</strong> use o app publicado no <strong>GitHub Pages por HTTPS</strong>, preferencialmente no Chrome/Edge para computador. O navegador solicitará acesso às pastas. Tudo é processado no dispositivo, sem enviar arquivos para servidores. Em navegadores sem acesso a pastas, use Chrome/Edge atualizado.</div>
+<section class="card"><div class="grid"><div><div class="label">1 · Pasta com HTMLs para importar</div><button id="sourceBtn">📂 Selecionar origem</button><div class="path" id="sourcePath">Nenhuma pasta selecionada</div><p class="small">Lê somente arquivos .html e .htm (inclusive subpastas, opcionalmente).</p></div><div><div class="label">2 · Pasta onde organizar e salvar</div><button id="destBtn">📁 Selecionar destino</button><div class="path" id="destPath">Nenhuma pasta selecionada</div><p class="small">Verifica HTMLs que já existem na pasta de destino antes de organizar.</p></div></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><label class="check"><input type="checkbox" id="recursive">Incluir subpastas da origem</label><label class="check"><input type="checkbox" id="renameExisting" checked>Renomear também arquivos HTML já existentes no destino quando os títulos coincidirem</label><label class="check"><input type="checkbox" id="dryrun" checked>Modo prévia: exigir um clique extra para aplicar alterações (recomendado)</label><div class="actions" style="margin-top:19px"><button id="scanBtn" disabled>🔎 Analisar e montar prévia</button><button id="applyBtn" disabled>✅ Aplicar organização</button><button id="reportBtn" class="sub" disabled>📥 Baixar relatório HTML</button></div><div class="progressPanel" id="progressPanel" hidden role="status" aria-live="polite"><div class="progressTitle" id="progressTitle">Preparando...</div><div class="progressTrack" role="progressbar" aria-label="Andamento" id="progressTrack" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progressFill" id="progressFill"></div></div><div class="progressMeta" id="progressMeta">0%</div></div></section>
+<section class="card"><h2 style="margin-top:0">Prévia do resultado</h2><div class="metrics" id="metrics"><div class="metric"><strong>0</strong>Arquivos planejados</div></div><div class="tablewrap"><table><thead><tr><th>Origem</th><th>Título encontrado</th><th>Data utilizada</th><th>Nome final</th><th>Ação</th></tr></thead><tbody id="rows"><tr><td colspan="5">Selecione as duas pastas e clique em analisar.</td></tr></tbody></table></div></section>
+<section class="card"><h2 style="margin-top:0">Registro</h2><div id="log" aria-live="polite">Aguardando seleção de pastas.</div><p class="small">A data usada é a última modificação informada pelo sistema, pois o navegador não disponibiliza de forma confiável a data de criação original. Arquivos com conteúdo absolutamente idêntico são reconhecidos por SHA-256, independentemente do nome. Antes de alterações em massa, faça uma cópia de segurança.</p></section></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);let src=null,dst=null,plan=[],busy=false,lastReport=null;
+let lastPaint=0;
+const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
+async function progress(label,done,total,detail='',force=false){
+ const now=performance.now();if(!force&&now-lastPaint<90&&done<total)return;
+ lastPaint=now;const percent=total>0?Math.round(done/total*100):0;
+ $('progressPanel').hidden=false;$('progressTitle').textContent=label;
+ $('progressFill').style.width=percent+'%';$('progressTrack').setAttribute('aria-valuenow',percent);
+ $('progressMeta').textContent=`${done} de ${total} · ${percent}%`+(detail?' · '+detail:'');
+ await yieldUI();
+}
+function progressEnd(text){$('progressTitle').textContent=text;$('progressFill').style.width='100%';$('progressTrack').setAttribute('aria-valuenow','100');$('progressMeta').textContent='100% · Etapa concluída';}
+
+function log(s){$('log').textContent+='\n['+new Date().toLocaleTimeString('pt-BR')+'] '+s;$('log').scrollTop=$('log').scrollHeight}
+function busySet(v){busy=v;for(let id of ['sourceBtn','destBtn','scanBtn','applyBtn'])$(id).disabled=v||((id==='scanBtn')&&(!src||!dst))||((id==='applyBtn')&&plan.length===0)}
+function valid(n){return /\.html?$/i.test(n)}
+function safeTitle(t){return (t||'Sem título').replace(/[\\/:*?"<>|\x00-\x1f]/g,' ').replace(/\s+/g,' ').replace(/[. ]+$/g,'').trim().slice(0,125)||'Sem título'}
+function titleFrom(html){const doc=new DOMParser().parseFromString(html,'text/html');return (doc.querySelector('title')?.textContent||'').trim()||'Sem título'}
+const normalize=s=>s.normalize('NFC').toLocaleLowerCase('pt-BR');
+async function hash(file){const buf=await file.arrayBuffer();const result=await crypto.subtle.digest('SHA-256',buf);return [...new Uint8Array(result)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function list(folder,recursive=false,path='',state={count:0}){const out=[];for await(const [name,h] of folder.entries()){if(h.kind==='file'&&valid(name)){out.push({h,name,path:path+name});state.count++;if(state.count%30===0){$('progressTitle').textContent='Localizando HTMLs nas pastas...';$('progressMeta').textContent=state.count+' arquivo(s) encontrados · preparando análise';await yieldUI()}}else if(recursive&&h.kind==='directory'){out.push(...await list(h,true,path+name+'/',state))}}return out}
+function baseName(title){return safeTitle(title)}
+function naming(titles){ // Map of group key -> ordered records, already filtered of exact duplicates
+ const groups=new Map();for(let r of titles){let k=normalize(r.title);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r)}
+ for(let items of groups.values()){
+  items.sort((a,b)=>a.date-b.date || (a.kind==='dest'?-1:1) || a.path.localeCompare(b.path));
+  let base=baseName(items[0].title);
+  if(items.length===1){items[0].out=base+'.html';continue}
+  // If title ends with Vnumber, use V3.1 V3.2 ... for repeated versions.
+  let m=base.match(/^(.*?\bV\d+(?:\.\d+)?)$/i);
+  items.forEach((r,i)=>r.out=base+(m?'.'+(i+1):' '+(i+1))+'.html');
+ }
+ // Protect against case-insensitive collisions from truncation or suffix construction
+ const used=new Set();for(let r of titles.sort((a,b)=>a.date-b.date)){let candidate=r.out,i=2;while(used.has(normalize(candidate))){candidate=r.out.replace(/\.html$/i,'')+' - '+i+'.html';i++}r.out=candidate;used.add(normalize(candidate))}
+}
+function fmtDate(ms){return Number.isFinite(ms)?new Date(ms).toLocaleString('pt-BR'):'Desconhecida'}
+async function select(which){try{if(!window.showDirectoryPicker)throw Error('Seu navegador não suporta seleção de pastas. Use Chrome ou Edge para computador.');let dir=await showDirectoryPicker({mode:which==='dest'?'readwrite':'read',id:which});if(which==='source'){src=dir;$('sourcePath').textContent=dir.name}else{dst=dir;$('destPath').textContent=dir.name}plan=[];lastReport=null;$('reportBtn').disabled=true;$('applyBtn').disabled=true;$('rows').innerHTML='<tr><td colspan="5">Selecione “Analisar e montar prévia”.</td></tr>';log('Pasta '+(which==='source'?'origem':'destino')+': '+dir.name);busySet(false)}catch(e){if(e.name!=='AbortError')log('Erro: '+e.message)}}
+$('sourceBtn').onclick=()=>select('source');$('destBtn').onclick=()=>select('dest');
+async function analyze(){if(!src||!dst)return;busySet(true);plan=[];lastReport=null;$('reportBtn').disabled=true;try{
+ if(await src.isSameEntry(dst))throw Error('A pasta de origem e a de destino precisam ser diferentes.');
+ await progress('Localizando arquivos da origem...',0,1,'Aguarde',true);let srcList=await list(src,$('recursive').checked);await progress('Localizando arquivos do destino...',0,1,'Aguarde',true);let dstList=await list(dst,false);
+ log(`Encontrados ${srcList.length} HTML(s) na origem e ${dstList.length} no destino.`);
+ let records=[];const total=srcList.length+dstList.length;let processed=0;
+ await progress('Lendo títulos e verificando arquivos...',0,total,'A análise pode levar alguns minutos',true);
+ for(let [kind,arr] of [['dest',dstList],['source',srcList]])for(let item of arr){try{const file=await item.h.getFile();const content=await file.text();records.push({...item,kind,title:baseName(titleFrom(content)),date:file.lastModified,size:file.size,digest:await hash(file),content})}catch(e){log('Falha ao ler '+item.path+': '+e.message)}finally{processed++;await progress('Lendo títulos e verificando duplicatas...',processed,total,item.name)}}
+ await progress('Calculando nomes e versões...',1,2,'Comparando arquivos',true);
+ // Destination versions have priority: no reimporting same binary file.
+ let seen=new Map(),active=[];for(let r of records){if(seen.has(r.digest)){r.action='duplicado';r.match=seen.get(r.digest).path}else{seen.set(r.digest,r);active.push(r)}}
+ let rename=$('renameExisting').checked;
+ if(rename){naming(active)}else{
+   // Fixed current destination names. Incoming name increments when needed.
+   let existing=active.filter(r=>r.kind==='dest'),incoming=active.filter(r=>r.kind==='source');
+   const used=new Set(existing.map(r=>normalize(r.name)));for(let r of existing)r.out=r.name;
+   naming(incoming);
+   for(let r of incoming){let proposal=r.out,n=1;while(used.has(normalize(proposal))){proposal=baseName(r.title)+( /\bV\d+(?:\.\d+)?$/i.test(r.title)?'.'+n:' '+n)+'.html';n++}r.out=proposal;used.add(normalize(proposal))}
+ }
+ for(let r of active){r.action=r.kind==='source'?'importar':(r.name===r.out?'manter':'renomear')}
+ plan=[...records];await progress('Montando a prévia...',2,2,'Preparando tabela',true);await render();progressEnd('✅ Análise concluída');log('Prévia gerada. Confira os nomes antes de aplicar.');
+ }catch(e){$('progressTitle').textContent='❌ Erro na análise';log('Erro na análise: '+e.message);alert(e.message)}finally{busySet(false)}}
+async function render(){let tbody=$('rows');tbody.replaceChildren();let fragment=document.createDocumentFragment();let rowIndex=0;let counts={importar:0,renomear:0,manter:0,duplicado:0};for(let r of plan){counts[r.action]=(counts[r.action]||0)+1;let tr=document.createElement('tr');for(let [index,text] of [r.kind==='dest'?'Destino: '+r.path:'Origem: '+r.path,r.title,fmtDate(r.date),r.action==='duplicado'?'—':r.out,r.action==='duplicado'?'IGNORAR: cópia de '+r.match:r.action.toUpperCase()].entries()){let td=document.createElement('td');td.dataset.label=['Origem','Título encontrado','Data utilizada','Nome final','Ação'][index];td.textContent=text;tr.append(td)}tr.lastChild.className=r.action==='duplicado'?'skip':r.action==='renomear'?'rename':'ok';fragment.append(tr);rowIndex++;if(rowIndex%100===0){tbody.append(fragment);fragment=document.createDocumentFragment();await yieldUI()}}tbody.append(fragment);$('metrics').innerHTML='';for(let [label,n] of [['HTMLs analisados',plan.length],['Novos para importar',counts.importar],['Existentes a renomear',counts.renomear],['Duplicados ignorados',counts.duplicado]]){let e=document.createElement('div');e.className='metric';e.innerHTML='<strong>'+n+'</strong>'+label;$('metrics').append(e)}}
+$('scanBtn').onclick=analyze;
+async function put(name,content){let h=await dst.getFileHandle(name,{create:true});let w=await h.createWritable();try{await w.write(content);await w.close()}catch(e){try{await w.abort()}catch{}throw e}}
+async function apply(){if(!plan.length)return;let changed=plan.filter(r=>r.action==='importar'||r.action==='renomear');if(!changed.length){log('Nada para gravar.');return}
+ if(!confirm(`Aplicar ${changed.length} alteração(ões) na pasta ${dst.name}?\n\nRecomendamos ter um backup da pasta.`))return;
+ busySet(true);let staged=[];let written=0;const totalSteps=changed.length*3+changed.filter(r=>r.action==='renomear').length;await progress('Salvando cópias temporárias...',0,totalSteps,'Não feche esta página',true);try{
+ // Temporarily stage every change, avoiding conflict with original filenames.
+ const id='.__organizador_temp_'+Date.now().toString(36)+'_';
+ for(let [i,r] of changed.entries()){let temp=id+i+'.html';await put(temp,r.content);staged.push({r,temp});await progress('Salvando cópias temporárias...',++written,totalSteps,r.out)}
+ // Destination old names are removed only after all staged copies exist.
+ // Verify staging before removing any source in destination.
+ for(let v of staged){let f=await(await dst.getFileHandle(v.temp)).getFile();if(await hash(f)!==v.r.digest)throw Error('Falha na verificação da cópia temporária de '+v.r.path);await progress('Verificando cópias...',++written,totalSteps,v.r.out)}
+ for(let r of changed.filter(r=>r.action==='renomear')){await dst.removeEntry(r.name);await progress('Renomeando arquivos existentes...',++written,totalSteps,r.name)}
+ for(let v of staged){await put(v.r.out,v.r.content);let f=await(await dst.getFileHandle(v.r.out)).getFile();if(await hash(f)!==v.r.digest)throw Error('Falha ao verificar '+v.r.out);await dst.removeEntry(v.temp);await progress('Gravando arquivos definitivos...',++written,totalSteps,v.r.out)}
+ progressEnd('✅ Organização concluída');log('Concluído: '+changed.length+' arquivo(s) organizado(s). Origem preservada.');
+ lastReport={date:new Date().toLocaleString('pt-BR'),source:src.name,destination:dst.name,items:plan.map(r=>({newName:r.action==='duplicado'?'—':r.out,oldName:r.name,origin:(r.kind==='source'?src.name:dst.name)+'/'+r.path,action:r.action,duplicateOf:r.match||''}))};
+ $('reportBtn').disabled=false;log('Relatório disponível para download.');plan=[];busySet(false);
+ }catch(e){$('progressTitle').textContent='❌ Erro ao salvar';log('ERRO durante a gravação: '+e.message+'; arquivos temporários podem continuar no destino para recuperação.');alert('Erro: '+e.message+'\nVerifique os arquivos temporários e seu backup antes de tentar novamente.')}finally{busySet(false)}}
+$('applyBtn').onclick=apply;
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function buildReport(data){
+ let entries=[...data.items].sort((a,b)=>(a.newName==='—'?a.oldName:a.newName).localeCompare(b.newName==='—'?b.oldName:b.newName,'pt-BR',{numeric:true}));
+ let cards=entries.map((r,i)=>`<article class="item" data-search="${esc([r.newName,r.oldName,r.origin,r.action].join(' ').toLowerCase())}"><div class="index">Arquivo ${String(i+1).padStart(3,'0')} · ${esc(r.action)}</div><h2>${esc(r.newName==='—'?r.oldName:r.newName)}</h2><div class="label">📁 Local original</div><p>${esc(r.origin)}</p><div class="label">📄 Nome anterior</div><p>${esc(r.oldName)}</p><div class="label">📍 Caminho original completo</div><p>${esc(r.origin)}</p>${r.duplicateOf?`<p class="duplicate">Duplicado ignorado · cópia de ${esc(r.duplicateOf)}</p>`:''}</article>`).join('');
+ return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relatório de organização HTML</title><style>*{box-sizing:border-box}body{font-family:system-ui,Arial,sans-serif;background:#0b1020;color:#f0f5ff;margin:0}.wrap{max-width:850px;margin:auto;padding:24px 15px}.meta{color:#b8c6df}.item{background:#17223a;border:1px solid #354b6d;border-radius:15px;padding:18px;margin:14px 0;overflow-wrap:anywhere}.item h2{font-size:20px;color:#b5d7ff}.index{color:#81d6aa;font-weight:700;font-size:13px;text-transform:uppercase}.label{font-weight:700;color:#8db5e9;margin-top:14px}p{line-height:1.5;margin:6px 0}input{width:100%;font:inherit;padding:15px;background:#202d48;border:1px solid #54709a;border-radius:12px;color:white;margin-top:15px}.duplicate{color:#ffd18a}.hidden{display:none}</style></head><body><main class="wrap"><h1>📋 Relatório de organização</h1><p class="meta">Gerado em: ${esc(data.date)}<br>Origem: ${esc(data.source)}<br>Destino: ${esc(data.destination)}<br>Registros: ${entries.length}</p><input id="q" type="search" placeholder="🔎 Buscar nome novo, nome antigo ou caminho..." aria-label="Buscar arquivos"><p class="meta" id="count"></p><div id="items">${cards}</div></main><script>const items=[...document.querySelectorAll('.item')];const q=document.querySelector('#q'),count=document.querySelector('#count');function filter(){let v=q.value.toLocaleLowerCase('pt-BR');let n=0;for(const el of items){let ok=el.dataset.search.includes(v);el.classList.toggle('hidden',!ok);if(ok)n++}count.textContent=n+' de '+items.length+' registro(s)'}q.addEventListener('input',filter);filter();<\/script></body></html>`.replace('<\/script>','</scr'+'ipt>');
+}
+$('reportBtn').onclick=()=>{if(!lastReport)return;const blob=new Blob([buildReport(lastReport)],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='relatorio_organizacao_'+new Date().toISOString().slice(0,10)+'.html';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)};
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>log('Modo offline indisponível: '+e.message)))}
+
+if(!window.showDirectoryPicker){log('ATENÇÃO: seleção de pastas não suportada neste navegador. Abra este HTML no Chrome ou Edge para computador.')}else{log('Pronto para selecionar as duas pastas.')}
+</script></body></html>
